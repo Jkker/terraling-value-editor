@@ -1,0 +1,37 @@
+{
+  "name": "terraling-value-editor",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.4",
+    "@mui/material": "^5.0.4",
+    "ismobilejs": "^1.1.1",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@vitejs/plugin-react": "^1.0.0",
+    "typescript": "^4.3.2",
+    "vite": "^2.6.4"
+  },
+  "description": "Refactor of Terraling's Edit Values page",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Jkker/terraling-value-editor.git"
+  },
+  "author": "Jerry K Jia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jkker/terraling-value-editor/issues"
+  },
+  "homepage": "https://github.com/Jkker/terraling-value-editor#readme"
+}
