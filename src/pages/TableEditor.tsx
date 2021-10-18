@@ -1,11 +1,6 @@
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
-import { ILingProperty } from '../types';
-import { Box, Chip, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-
-import { useState } from 'react';
-
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { SurenessIcon } from '../components/SurenessEditor';
 import data from '../data';
 
 const columns: GridColDef[] = [
@@ -19,10 +14,10 @@ const columns: GridColDef[] = [
 		valueOptions: ['Yes', 'No', 'N/A'],
 	},
 	{
-		field: 'status',
-		headerName: 'Certainty',
+		field: 'sureness',
+		headerName: 'Sureness',
 		type: 'singleSelect',
-		width: 150,
+		width: 180,
 		editable: false,
 		valueOptions: ['uncertain', 'certain'],
 		renderCell: (params) => <SurenessEditor {...params} />,
@@ -44,10 +39,13 @@ export function SurenessEditor({ value, id, api, field, ...restProps }: any) {
 	return (
 		<ToggleButtonGroup value={value} exclusive onChange={handleChange}>
 			<ToggleButton value='certain'>
-				<CheckCircleOutlineIcon />
+				<SurenessIcon sureness='certain' sx={{ marginRight: 1 }} />
 			</ToggleButton>
-			<ToggleButton value='uncertain'>
-				<HelpOutlineIcon />
+			<ToggleButton value='revisit'>
+				<SurenessIcon sureness='revisit' sx={{ marginRight: 1 }} />
+			</ToggleButton>
+			<ToggleButton value='need_help'>
+				<SurenessIcon sureness='need_help' sx={{ marginRight: 1 }} />
 			</ToggleButton>
 		</ToggleButtonGroup>
 	);

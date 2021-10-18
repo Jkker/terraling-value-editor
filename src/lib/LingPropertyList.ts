@@ -24,7 +24,7 @@ class LingPropertyList {
 	public getNextUnset(): ILingProperty | undefined {
 		for (let i = 0; i < this.properties.length; i++) {
 			const idx = (this.currentIndex + i) % this.properties.length;
-			if (this.properties[idx].status == 'unset') {
+			if (!this.properties[idx].sureness) {
 				this.currentIndex = idx;
 				return this.properties[idx];
 			}
@@ -33,7 +33,7 @@ class LingPropertyList {
 	public getNextUncertain(): ILingProperty | undefined {
 		for (let i = 0; i < this.properties.length; i++) {
 			const idx = (this.currentIndex + i) % this.properties.length;
-			if (this.properties[idx].status == 'uncertain') {
+			if (this.properties[idx].sureness !== 'certain') {
 				this.currentIndex = idx;
 				return this.properties[idx];
 			}

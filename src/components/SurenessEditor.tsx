@@ -30,12 +30,14 @@ export const SurenessIcon = ({
 	}
 };
 
-export default function SurenessEditor({ sureness, updateProperty }: any) {
+export default function SurenessEditor({ sureness, updateProperty, showFormLabel = true }: any) {
 	return (
 		<FormControl component='fieldset'>
-			<FormLabel component='legend' sx={{ mb: 1 }}>
-				How sure are you?
-			</FormLabel>
+			{showFormLabel && (
+				<FormLabel component='legend' sx={{ mb: 1 }}>
+					How sure are you?
+				</FormLabel>
+			)}
 			<ToggleButtonGroup
 				value={sureness}
 				exclusive
