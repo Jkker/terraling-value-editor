@@ -30,6 +30,8 @@ import SurenessEditor, { SurenessIcon } from '../components/SurenessEditor';
 import data from '../data';
 import usePropertyList from '../lib/usePropertyList';
 import { ILingProperty } from '../types';
+import ValueEditor from '../components/ValueEditor';
+
 const drawerWidth = 300;
 
 export default function DetailedEditor() {
@@ -122,14 +124,12 @@ export default function DetailedEditor() {
 					<Card>
 						<CardContent>
 							<Stack spacing={1}>
-								<Typography variant='h5'>Value</Typography>
-							</Stack>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardContent>
-							<Stack spacing={1}>
-								<Typography variant='h5'>Certainty</Typography>
+								<ValueEditor
+									options={currentProperty.available_values}
+									value={currentProperty.value}
+									name={currentProperty.name}
+								/>
+
 								<SurenessEditor
 									sureness={currentProperty.sureness}
 									updateProperty={listOps.updateProperty}
@@ -137,6 +137,13 @@ export default function DetailedEditor() {
 							</Stack>
 						</CardContent>
 					</Card>
+					{/* <Card>
+						<CardContent>
+							<Stack spacing={1}>
+								<Typography variant='h5'>Certainty</Typography>
+							</Stack>
+						</CardContent>
+					</Card> */}
 					<Card>
 						<CardContent>
 							<Stack spacing={1}>
