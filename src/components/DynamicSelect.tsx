@@ -1,29 +1,20 @@
-import * as React from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
-	TextField,
 	Box,
-	Menu,
-	MenuItem,
-	IconButton,
-	ListItemButton,
-	Popper,
-	Grow,
 	Button,
-	Typography,
-	Tooltip,
+	IconButton,
 	ListItem,
+	ListItemButton,
+	TextField,
+	Tooltip,
 } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
-import { ILingProperty } from '../types';
+import * as React from 'react';
 
 type OptionType = {
 	value: string;
@@ -95,33 +86,33 @@ export default function FreeSoloCreateOption(props: any) {
 				}}
 				renderOption={({ className, ...props }, option, state) => (
 					<ListItem
-						sx={{ display: 'flex' }}
-						disablePadding
+						sx={{
+							display: 'flex',
+							'&.Mui-focused': {
+								bgcolor: 'rgba(0,0,0,0.1)',
+							},
+						}}
 						key={option.value}
+						{...props}
+						disablePadding
 						secondaryAction={
-							option.temporary || (
-								<Tooltip title='Delete' placement='left'>
-									<IconButton name='delete' edge='end' onClick={() => setDialogOpen(option)}>
-										<DeleteIcon />
-									</IconButton>
-								</Tooltip>
-							)
+							<Tooltip title='Delete' placement='left'>
+								<IconButton
+									name='delete'
+									edge='end'
+									onClick={() => setDialogOpen(option)}
+									sx={{
+										display: option.temporary ? 'none' : 'block',
+										pr: '6px',
+										mt: 1 / 2,
+									}}
+								>
+									<DeleteIcon />
+								</IconButton>
+							</Tooltip>
 						}
 					>
-						<ListItemButton
-							{...props}
-							sx={{
-								'&.Mui-focused': {
-									bgcolor: 'rgba(0,0,0,0.1)',
-								},
-								display: 'flex',
-								justifyContent: 'space-between',
-								width: '100%',
-								flex: '1 1 auto',
-								pl: 1.5,
-								py: 1,
-							}}
-						>
+						<ListItemButton sx={{ pl: 1.5 }}>
 							{option.temporary ? (
 								<Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
 									Add new option: <Box sx={{ color: 'text.primary', pl: 1 }}>{option.value}</Box>
@@ -132,7 +123,6 @@ export default function FreeSoloCreateOption(props: any) {
 						</ListItemButton>
 					</ListItem>
 				)}
-				sx={{ width: 300 }}
 				renderInput={(params) => <TextField {...params} label={name} />}
 			/>
 			<Dialog
@@ -151,9 +141,7 @@ export default function FreeSoloCreateOption(props: any) {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setDialogOpen(null)} autoFocus>
-						Cancel
-					</Button>
+					<Button onClick={() => setDialogOpen(null)}>Cancel</Button>
 					<Button onClick={() => deleteOption()} color='error'>
 						Delete
 					</Button>
