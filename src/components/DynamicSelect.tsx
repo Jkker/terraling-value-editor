@@ -6,6 +6,7 @@ import {
 	IconButton,
 	ListItem,
 	ListItemButton,
+	MenuItem,
 	TextField,
 	Tooltip,
 } from '@mui/material';
@@ -15,62 +16,74 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import * as React from 'react';
+import { useState, useRef } from 'react';
 
-type OptionType = {
-	value: string;
-	label?: string;
-	highlighted?: boolean;
-	userCreated?: boolean;
-	temporary?: boolean;
-};
+export type OptionType = string | null | undefined;
+// export type OptionType = {
+// 	value: string;
+// 	label?: string;
+// 	temporary?: boolean;
+// };
 const filter = createFilterOptions<OptionType>();
 
-export default function FreeSoloCreateOption(props: any) {
-	const { name = 'Ling Property Value', available_values = ['Yes', 'No', 'N/A'] } = props;
+interface DynamicSelectProps {
+	name?: string;
+	options?: OptionType[];
+	setOptions: (options: OptionType[]) => void;
+	value: OptionType;
+	setValue: (value: OptionType) => void;
+}
 
-	const [value, setValue] = React.useState<OptionType | null>(null);
-	const [options, setOptions] = React.useState<OptionType[]>(
-		available_values.map((v: string) => ({ value: v, label: v }))
-	);
-	const [deletionDialog, setDialogOpen] = React.useState<OptionType | null>(null);
+export default function DynamicSelect(props: DynamicSelectProps) {
+	const {
+		name = 'Ling Property Value',
+		options = ['Yes', 'No', 'N/A'],
+		value,
+		setValue,
+		setOptions,
+		...restProps
+	} = props;
+
+	const tempOption = useRef<OptionType>(null);
+	const [toBeDeleted, setToBeDeleted] = useState<OptionType>(null);
 
 	const deleteOption = () => {
-		if (deletionDialog) {
-			setOptions((prevOptions) => prevOptions.filter((o) => o.value !== deletionDialog.value));
-			if (value && value.value === deletionDialog.value) setValue(null);
-			setDialogOpen(null);
+		if (toBeDeleted) {
+			const newOptions = options.filter((v) => v !== toBeDeleted);
+			setOptions(newOptions);
+			console.table({ value, toBeDeleted });
+			if (value === toBeDeleted) setValue(null);
+			setToBeDeleted(null);
 		}
 	};
 
 	const addOption = (newOption: OptionType) => {
-		newOption.temporary = false;
-		setOptions((options) => [...options, newOption]);
+		tempOption.current = null;
+		setOptions([...options, newOption]);
 	};
 
 	const filterOptions = (options: OptionType[], params: FilterOptionsState<OptionType>) => {
 		const filtered = filter(options, params);
 		// Suggest the creation of a new value
 		const inputValue = params.inputValue;
-		const isExisting = options.some((option) => inputValue === option.value);
-		if (inputValue !== '' && !isExisting) {
-			filtered.push({ value: inputValue, userCreated: true, temporary: true });
+		const isExisting = options.includes(inputValue);
+		if (inputValue && !isExisting) {
+			tempOption.current = inputValue;
+			filtered.push(inputValue);
 		}
 		return filtered;
 	};
 
 	return (
-		<Box>
+		<>
 			<Autocomplete
 				value={value}
 				onChange={(event, newValue, reason) => {
-					if (typeof newValue === 'string') {
-						setValue({ value: newValue, label: newValue });
-					} else if (reason === 'selectOption' && newValue?.temporary) {
+					console.log(newValue, reason);
+					if (reason === 'selectOption' && !options.includes(newValue)) {
 						addOption(newValue);
-					} else {
-						setValue(newValue);
 					}
+					setValue(newValue);
 				}}
 				filterOptions={filterOptions}
 				selectOnFocus
@@ -81,33 +94,25 @@ export default function FreeSoloCreateOption(props: any) {
 				autoComplete
 				fullWidth
 				forcePopupIcon
+				disablePortal
 				options={options}
-				getOptionLabel={(option) => {
-					// Value selected with enter, right from the input
-					if (typeof option === 'string') {
-						return option;
-					}
-					return option.label ?? option.value;
-				}}
 				renderOption={({ className, ...props }, option, state) => (
 					<ListItem
+						component='div'
 						sx={{
 							display: 'flex',
-							'&.Mui-focused': {
-								bgcolor: 'rgba(0,0,0,0.1)',
-							},
 						}}
-						key={option.value}
-						{...props}
+						key={option}
+						// {...props}
 						disablePadding
 						secondaryAction={
 							<Tooltip title='Delete' placement='left'>
 								<IconButton
 									name='delete'
 									edge='end'
-									onClick={() => setDialogOpen(option)}
+									onClick={() => setToBeDeleted(option)}
 									sx={{
-										display: option.temporary ? 'none' : 'block',
+										display: option === tempOption.current ? 'none' : 'block',
 										pr: '6px',
 										mt: 1 / 2,
 									}}
@@ -117,28 +122,44 @@ export default function FreeSoloCreateOption(props: any) {
 							</Tooltip>
 						}
 					>
-						<ListItemButton sx={{ pl: 1.5 }}>
-							{option.temporary ? (
+						<MenuItem
+							sx={{
+								pl: 1.5,
+								width: '100%',
+								'&.Mui-focused': {
+									bgcolor: 'rgba(0,0,0,0.1)',
+								},
+							}}
+							{...props}
+						>
+							{option === tempOption.current ? (
 								<Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
-									Add new option: <Box sx={{ color: 'text.primary', pl: 1 }}>{option.value}</Box>
+									New value: <Box sx={{ color: 'text.primary', pl: 1 }}>{option}</Box>
 								</Box>
 							) : (
-								option.label ?? option.value
+								option
 							)}
-						</ListItemButton>
+						</MenuItem>
 					</ListItem>
 				)}
-				renderInput={(params) => <TextField {...params} label={name} />}
+				sx={{ height: '100%', '.MuiInputBase-root': { height: '100%' } }}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						variant='standard'
+						sx={{ height: '100%' }}
+						placeholder='Select a value'
+					/>
+				)}
 			/>
 			<Dialog
-				open={!!deletionDialog}
-				onClose={() => setDialogOpen(null)}
+				open={!!toBeDeleted}
+				onClose={() => setToBeDeleted(null)}
 				aria-labelledby='alert-dialog-title'
 				aria-describedby='alert-dialog-description'
 			>
 				<DialogTitle id='alert-dialog-title'>
-					Delete {deletionDialog && <b>{deletionDialog?.label ?? deletionDialog?.value}</b>} from{' '}
-					<i>{name}</i>
+					Delete {toBeDeleted && <b>{toBeDeleted}</b>} from <i>{name}</i>
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText id='alert-dialog-description'>
@@ -146,13 +167,12 @@ export default function FreeSoloCreateOption(props: any) {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setDialogOpen(null)}>Cancel</Button>
+					<Button onClick={() => setToBeDeleted(null)}>Cancel</Button>
 					<Button onClick={() => deleteOption()} color='error'>
 						Delete
 					</Button>
 				</DialogActions>
 			</Dialog>
-			<Box sx={{ p: 4 }}>{JSON.stringify(options, null, 2)}</Box>
-		</Box>
+		</>
 	);
 }
