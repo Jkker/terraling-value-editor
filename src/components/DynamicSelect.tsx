@@ -2,6 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
 	Box,
 	Button,
+	FilterOptionsState,
 	IconButton,
 	ListItem,
 	ListItemButton,
@@ -42,32 +43,36 @@ export default function FreeSoloCreateOption(props: any) {
 		}
 	};
 
+	const addOption = (newOption: OptionType) => {
+		newOption.temporary = false;
+		setOptions((options) => [...options, newOption]);
+	};
+
+	const filterOptions = (options: OptionType[], params: FilterOptionsState<OptionType>) => {
+		const filtered = filter(options, params);
+		// Suggest the creation of a new value
+		const inputValue = params.inputValue;
+		const isExisting = options.some((option) => inputValue === option.value);
+		if (inputValue !== '' && !isExisting) {
+			filtered.push({ value: inputValue, userCreated: true, temporary: true });
+		}
+		return filtered;
+	};
+
 	return (
 		<Box>
 			<Autocomplete
 				value={value}
 				onChange={(event, newValue, reason) => {
-					console.log(newValue, reason);
 					if (typeof newValue === 'string') {
 						setValue({ value: newValue, label: newValue });
 					} else if (reason === 'selectOption' && newValue?.temporary) {
-						newValue.temporary = false;
-						setOptions((options) => [...options, newValue]);
+						addOption(newValue);
 					} else {
 						setValue(newValue);
 					}
 				}}
-				filterOptions={(options, params) => {
-					const filtered = filter(options, params);
-
-					const { inputValue } = params;
-					// Suggest the creation of a new value
-					const isExisting = options.some((option) => inputValue === option.value);
-					if (inputValue !== '' && !isExisting) {
-						filtered.push({ value: inputValue, userCreated: true, temporary: true });
-					}
-					return filtered;
-				}}
+				filterOptions={filterOptions}
 				selectOnFocus
 				clearOnBlur
 				handleHomeEndKeys
