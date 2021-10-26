@@ -20,17 +20,21 @@ export const SurenessIcon = ({
 } & SvgIconProps) => {
 	switch (sureness) {
 		case 'need_help':
-			return <HelpIcon {...iconProps} color='warning' />;
+			return <HelpIcon {...iconProps} color='error' />;
 		case 'revisit':
 			return <HistoryIcon {...iconProps} color='warning' />;
 		case 'certain':
 			return <CheckCircleIcon {...iconProps} color='success' />;
 		default:
-			return <CircleOutlinedIcon {...iconProps} color='action' />;
+			return <CircleOutlinedIcon {...iconProps} />;
 	}
 };
 
-export default function SurenessEditor({ sureness, updateProperty, showFormLabel = true }: any) {
+export default function SurenessEditor({
+	sureness: value,
+	updateProperty,
+	showFormLabel = true,
+}: any) {
 	return (
 		<FormControl component='fieldset'>
 			{showFormLabel && (
@@ -39,20 +43,29 @@ export default function SurenessEditor({ sureness, updateProperty, showFormLabel
 				</FormLabel>
 			)}
 			<ToggleButtonGroup
-				value={sureness}
+				value={value}
 				exclusive
-				onChange={(event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) =>
-					updateProperty({ sureness: value })
-				}
+				onChange={(event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+					if (value) updateProperty({ sureness: value });
+				}}
 			>
-				<ToggleButton value='certain'>
-					<SurenessIcon sureness='certain' sx={{ marginRight: 1 }} /> Certain
+				<ToggleButton value='certain' color={value === 'certain' ? 'success' : 'standard'}>
+					<CheckCircleIcon
+						sx={{ marginRight: 1, mx: 'auto' }}
+						color={value === 'certain' ? 'success' : 'action'}
+					/>
 				</ToggleButton>
-				<ToggleButton value='revisit'>
-					<SurenessIcon sureness='revisit' sx={{ marginRight: 1 }} /> Revisit
+				<ToggleButton value='revisit' color={value === 'revisit' ? 'warning' : 'standard'}>
+					<HistoryIcon
+						sx={{ marginRight: 1, mx: 'auto' }}
+						color={value === 'revisit' ? 'warning' : 'action'}
+					/>
 				</ToggleButton>
-				<ToggleButton value='need_help'>
-					<SurenessIcon sureness='need_help' sx={{ marginRight: 1 }} /> Need Help
+				<ToggleButton value='need_help' color={value === 'need_help' ? 'error' : 'standard'}>
+					<HelpIcon
+						sx={{ marginRight: 1, mx: 'auto' }}
+						color={value === 'need_help' ? 'error' : 'action'}
+					/>
 				</ToggleButton>
 			</ToggleButtonGroup>
 		</FormControl>
