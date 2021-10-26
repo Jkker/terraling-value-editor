@@ -137,13 +137,6 @@ export default function DetailedEditor() {
 							</Stack>
 						</CardContent>
 					</Card>
-					{/* <Card>
-						<CardContent>
-							<Stack spacing={1}>
-								<Typography variant='h5'>Certainty</Typography>
-							</Stack>
-						</CardContent>
-					</Card> */}
 					<Card>
 						<CardContent>
 							<Stack spacing={1}>
